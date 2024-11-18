@@ -154,33 +154,53 @@ app.get('/cars', async (req, res) => {
 
 
 // Route to add a car with Cloudinary image upload
-app.post('/add', verifyUser, async (req, res) => {
+// app.post('/add', verifyUser, async (req, res) => {
+//   try {
+//     const { title, description, image } = req.body;
+//     let imageUrl = image;
+
+//     if (image) {
+//       // If the image is provided, upload it to Cloudinary
+//       const cloudinaryResponse = await cloudinary.uploader.upload(image, {
+//         folder: 'cars', // optional, change to your folder name
+//       });
+//       imageUrl = cloudinaryResponse.secure_url; // Save the URL of the uploaded image
+//     }
+
+//     const newCar = new Car({
+//       email: req.email,
+//       title,
+//       description,
+//       image: imageUrl, // Save the Cloudinary image URL
+//     });
+
+//     await newCar.save();
+//     res.json({ Status: 'Car added successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.json({ Error: 'Failed to add car' });
+//   }
+// });
+app.post('/add', verifyUser, upload.single('image'), async (req, res) => {
+  if (req.fileValidationError) {
+    return res.status(400).send({ error: req.fileValidationError });
+  }
   try {
-    const { title, description, image } = req.body;
-    let imageUrl = image;
-
-    if (image) {
-      // If the image is provided, upload it to Cloudinary
-      const cloudinaryResponse = await cloudinary.uploader.upload(image, {
-        folder: 'cars', // optional, change to your folder name
-      });
-      imageUrl = cloudinaryResponse.secure_url; // Save the URL of the uploaded image
-    }
-
     const newCar = new Car({
+      ...req.body,
       email: req.email,
-      title,
-      description,
-      image: imageUrl, // Save the Cloudinary image URL
+      image: req.file ? `/uploads/${req.file.filename}` : null, // Save relative path
     });
+    console.log(newCar, 'in addd');
 
     await newCar.save();
-    res.json({ Status: 'Car added successfully' });
+    res.json({ Status: 'Success' });
   } catch (error) {
     console.error(error);
     res.json({ Error: 'Failed to add car' });
   }
 });
+
 
 
 // Remove car
