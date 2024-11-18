@@ -23,16 +23,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cookieParser());
 
 // Configure CORS
-const allowedOrigins = ['http://localhost:3000',"https://carmanagementfullstack.netlify.app/"];
-
-const cloudinary = require('cloudinary').v2;
-
-cloudinary.config({
-  cloud_name: 'dg9itycrz',
-  secure:true,
-  api_key: 'N73DwUhXeY-awDwks0HNE_rLm68',
-  api_secret: 'your-api-secret',
-});
+const allowedOrigins = ['http://localhost:3000',"https://carmanagementfullstack.netlify.app"];
 
 app.use(cors({
   origin: allowedOrigins,
